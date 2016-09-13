@@ -42,9 +42,7 @@ static void	handler_64(char *ptr)
 		if (load_commands->cmd == LC_SYMTAB)
 		{
 			sym = (struct symtab_command *)load_commands;
-			ft_putnbr(sym->nsyms);
 			print_output(sym->nsyms, sym->symoff, sym->stroff, ptr);
-			ft_putchar('\n');
 			break;
 		}
 		load_commands = (void *)load_commands + load_commands->cmdsize;
@@ -70,7 +68,6 @@ int			main(int ac, char **av)
 	struct stat buf;
 
 	filename = av[1];
-	ft_putendl(filename);
 	if (ac != 2)
 		return (EXIT_FAILURE);
 	if ((fd = open(filename, O_RDONLY)) < 0)
