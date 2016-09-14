@@ -8,14 +8,14 @@
 #include <unistd.h>
 #include <stdio.h>
 
-static void print_output(uint32_t nsyms, uint32_t symoff, uint32_t stroff, char *ptr)
+static void print_output(uint32_t nsyms, uint32_t symoff, uint32_t stroff, void *ptr)
 {
 	uint32_t	i;
 	char		*stringtable;
 	struct nlist_64 *array;
 
-	array = (void *)ptr + symoff;
-	stringtable = (void *)ptr + stroff;
+	array = ptr + symoff;
+	stringtable = ptr + stroff;
 
 	i = 0;
 	while (i < nsyms)
@@ -25,7 +25,7 @@ static void print_output(uint32_t nsyms, uint32_t symoff, uint32_t stroff, char 
 	}
 }
 
-static void	handler_64(char *ptr)
+static void	handler_64(void *ptr)
 {
 	uint32_t	ncmds;
 	uint32_t			i;
@@ -36,7 +36,7 @@ static void	handler_64(char *ptr)
 	header = (struct mach_header_64 *)ptr;
 	ncmds = header->ncmds;
 	i = 0;
-	load_commands = (void *)ptr + sizeof(*header);
+	load_commands = ptr + sizeof(*header);
 	while (i < ncmds)
 	{
 		if (load_commands->cmd == LC_SYMTAB)
@@ -50,12 +50,11 @@ static void	handler_64(char *ptr)
 	}
 }
 
-static void	nm(char *ptr)
+static void	nm(void *ptr)
 {
 	uint32_t	magic_number;
 	magic_number = *(int *)ptr;
 
-	// Read 4 first byte (magic number)
 	if (magic_number == MH_MAGIC_64)
 		handler_64(ptr);
 }
