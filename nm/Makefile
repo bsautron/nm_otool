@@ -1,7 +1,11 @@
 NAME = ft_nm
 
 DEPENDENCIES_FOLDER = ../libraries
-DEPENDENCIES = libft
+DEPENDENCIES = libft \
+				liblist \
+				libhash \
+				libhtab \
+				libargs
 
 SOURCES_FOLDER = .
 SOURCES = 

@@ -7,6 +7,7 @@
 #include <mach-o/nlist.h>
 #include <unistd.h>
 #include <stdio.h>
+#include <libargs.h>
 
 static void print_output(uint32_t nsyms, uint32_t symoff, uint32_t stroff, void *ptr)
 {
@@ -59,24 +60,49 @@ static void	nm(void *ptr)
 		handler_64(ptr);
 }
 
-int			main(int ac, char **av)
+static int process_file(const char *filename, int extended)
 {
-	char	*filename;
 	int		fd;
 	char	*ptr;
 	struct stat buf;
 
-	filename = av[1];
-	if (ac != 2)
-		return (EXIT_FAILURE);
 	if ((fd = open(filename, O_RDONLY)) < 0)
 		return (EXIT_FAILURE);
 	if (fstat(fd, &buf) < 0)
 		return (EXIT_FAILURE);
 	if ((ptr = mmap(0, buf.st_size, PROT_READ, MAP_PRIVATE, fd, 0)) == MAP_FAILED)
 		return (EXIT_FAILURE);
+	if (extended)
+	{
+		ft_putchar('\n');
+		ft_putstr(filename);
+		ft_putendl(":");
+	}
 	nm(ptr);
 	if (munmap(ptr, buf.st_size) < 0)
 		return (EXIT_FAILURE);
+	return (EXIT_SUCCESS);
+}
+
+int			main(int ac, const char **av)
+{
+	t_args	args;
+
+	init_options(&args, "ft_nm");
+	if (!parse_options(&args, ac, av))
+		return (EXIT_SUCCESS);
+	if (args.argc < 2)
+		process_file("a.out", 0);
+	else if (args.argc == 2)
+		process_file(args.argv[1], 0);
+	else
+	{
+		args.argv++;
+		while (*args.argv)
+		{
+			process_file(*args.argv, 1);
+			args.argv++;
+		}
+	}
 	return (EXIT_SUCCESS);
 }
