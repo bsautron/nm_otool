@@ -8,7 +8,9 @@ DEPENDENCIES = libft \
 			   libargs
 
 SOURCES_FOLDER = .
-SOURCES = ../commun_sources/error_no_such_file_or_directory.c \
+SOURCES = print_symtab.c \
+		  \
+		  ../commun_sources/error_no_such_file_or_directory.c \
 		  ../commun_sources/error_is_a_directory.c
 
 OBJECTS_FOLDER = ../.objects/nm

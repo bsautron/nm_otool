@@ -1,32 +1,4 @@
 #include <ft_nm.h>
-#include <fcntl.h>
-#include <sys/mman.h>
-#include <sys/stat.h>
-#include <stdlib.h>
-#include <mach-o/loader.h>
-#include <mach-o/nlist.h>
-#include <unistd.h>
-#include <stdio.h>
-#include <libargs.h>
-#include <errors.h>
-
-static void print_output(uint32_t nsyms, uint32_t symoff, uint32_t stroff, void *ptr)
-{
-	uint32_t	i;
-	char		*stringtable;
-	struct nlist_64 *array;
-
-	array = ptr + symoff;
-	stringtable = ptr + stroff;
-
-	i = 0;
-	printf("%4s %4s %4s %4s %10s %s\n", "strx", "type", "sect",  "desc", "val", "string"); 
-	while (i < nsyms)
-	{
-		printf("%4d %4u %4u %4u %10llx %s\n", array[i].n_un.n_strx, array[i].n_type, array[i].n_sect, array[i].n_desc, array[i].n_value, stringtable + array[i].n_un.n_strx);
-		i++;
-	}
-}
 
 static void	handler_64(void *ptr)
 {
@@ -45,7 +17,8 @@ static void	handler_64(void *ptr)
 		if (load_commands->cmd == LC_SYMTAB)
 		{
 			sym = (struct symtab_command *)load_commands;
-			print_output(sym->nsyms, sym->symoff, sym->stroff, ptr);
+			print_symtab(sym, ptr);
+//			print_output(sym->nsyms, sym->symoff, sym->stroff, ptr);
 			break;
 		}
 		load_commands = (void *)load_commands + load_commands->cmdsize;
