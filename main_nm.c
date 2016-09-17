@@ -67,7 +67,13 @@ static int process_file(const char *filename, int extended)
 	struct stat buf;
 
 	if ((fd = open(filename, O_RDONLY)) < 0)
+	{
+		ft_putstr(__FILE__);
+		ft_putstr(": ");
+		ft_putstr(filename);
+		ft_putendl(": No sush file or directory.");
 		return (EXIT_FAILURE);
+	}
 	if (fstat(fd, &buf) < 0)
 		return (EXIT_FAILURE);
 	if ((ptr = mmap(0, buf.st_size, PROT_READ, MAP_PRIVATE, fd, 0)) == MAP_FAILED)
@@ -87,22 +93,25 @@ static int process_file(const char *filename, int extended)
 int			main(int ac, const char **av)
 {
 	t_args	args;
+	int		ret;
 
+	ret = EXIT_SUCCESS;
 	init_options(&args, "ft_nm");
 	if (!parse_options(&args, ac, av))
-		return (EXIT_SUCCESS);
+		ret = EXIT_FAILURE;
 	if (args.argc < 2)
-		process_file("a.out", 0);
+		ret = process_file("a.out", 0);
 	else if (args.argc == 2)
-		process_file(args.argv[1], 0);
+		ret = process_file(args.argv[1], 0);
 	else
 	{
 		args.argv++;
 		while (*args.argv)
 		{
-			process_file(*args.argv, 1);
+			if (process_file(*args.argv, 1) != EXIT_SUCCESS)
+				ret = EXIT_FAILURE;
 			args.argv++;
 		}
 	}
-	return (EXIT_SUCCESS);
+	return (ret);
 }
