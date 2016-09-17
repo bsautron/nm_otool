@@ -8,6 +8,7 @@
 #include <unistd.h>
 #include <stdio.h>
 #include <libargs.h>
+#include <errors.h>
 
 static void print_output(uint32_t nsyms, uint32_t symoff, uint32_t stroff, void *ptr)
 {
@@ -19,9 +20,10 @@ static void print_output(uint32_t nsyms, uint32_t symoff, uint32_t stroff, void 
 	stringtable = ptr + stroff;
 
 	i = 0;
+	printf("%4s %4s %4s %4s %10s %s\n", "strx", "type", "sect",  "desc", "val", "string"); 
 	while (i < nsyms)
 	{
-		printf("%s\n", stringtable + array[i].n_un.n_strx);
+		printf("%4d %4u %4u %4u %10llx %s\n", array[i].n_un.n_strx, array[i].n_type, array[i].n_sect, array[i].n_desc, array[i].n_value, stringtable + array[i].n_un.n_strx);
 		i++;
 	}
 }
@@ -66,16 +68,15 @@ static int process_file(const char *filename, int extended)
 	char	*ptr;
 	struct stat buf;
 
-	if ((fd = open(filename, O_RDONLY)) < 0)
+	fd = open(filename, O_RDONLY);
+	if (fstat(fd, &buf) < 0)
 	{
-		ft_putstr(__FILE__);
-		ft_putstr(": ");
-		ft_putstr(filename);
-		ft_putendl(": No sush file or directory.");
+
+		if (S_ISDIR(buf.st_mode))
+			return error_is_a_directory(filename);
+		error_no_such_file_or_directory(filename);
 		return (EXIT_FAILURE);
 	}
-	if (fstat(fd, &buf) < 0)
-		return (EXIT_FAILURE);
 	if ((ptr = mmap(0, buf.st_size, PROT_READ, MAP_PRIVATE, fd, 0)) == MAP_FAILED)
 		return (EXIT_FAILURE);
 	if (extended)

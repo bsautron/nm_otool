@@ -1,78 +1,9 @@
-NAME_NM = ft_nm
-NAME_OTOOL = ft_otool
+.PHONY: nm otool
 
-DEPENDENCIES_FOLDER = libraries
-DEPENDENCIES = libft \
-				liblist \
-				libhash \
-				libhtab \
-				libargs
+nm:
+	make -C nm/
+	cp nm/ft_nm .
 
-SOURCES_FOLDER = sources
-SOURCES_NM = 
-SOURCES_OTOOL = 
-SOURCES_COMMUN = 
-
-OBJECTS_FOLDER = .objects
-
-INCLUDES_FOLDER = includes
-INCLUDES = ft_nm.h
-
-CC = gcc
-CFLAGS = -Wextra -Wall -Werror
-
-MAIN_NM = main_nm.c
-MAIN_OBJECT_NM = $(OBJECTS_FOLDER)/$(MAIN_NM:.c=.o)
-MAIN_OTOOL = main_otool.c
-MAIN_OBJECT_OTOOL = $(OBJECTS_FOLDER)/$(MAIN_OTOOL:.c=.o)
-
-SOURCES_DEPENDENCIES = $(foreach dep,$(DEPENDENCIES),$(DEPENDENCIES_FOLDER)/$(dep)/$(dep).a)
-INCLUDES_LIBRARIES_FOLDER = $(foreach dep,$(DEPENDENCIES),-I $(DEPENDENCIES_FOLDER)/$(dep)/includes)
-MAKE_LIBRARIES = $(foreach dep,$(DEPENDENCIES),make -C $(DEPENDENCIES_FOLDER)/$(dep);)
-REBUILD_LIBRARIES = $(foreach dep,$(DEPENDENCIES),make re -C $(DEPENDENCIES_FOLDER)/$(dep);)
-
-OBJECTS_COMMUN = $(SOURCES_COMMUN:%.c=%.o)
-OBJECTS_NM = $(SOURCES_NM:%.c=%.o)
-OBJECTS_OTOOL = $(SOURCES_OTOOL:%.c=%.o)
-OBJECTS_DESTINATION = $(addprefix $(OBJECTS_FOLDER)/$(SOURCES_FOLDER)/, $(OBJECTS))
-
-all: init makelib $(NAME_NM) $(NAME_OTOOL)
-
-$(NAME_NM): $(MAIN_OBJECT_NM) $(OBJECTS_COMMUN) $(OBJECTS_NM) $(OBJECTS_DESTINATION)
-	$(CC) $(CFLAGS) -o $@ $< $(addprefix $(OBJECTS_FOLDER)/$(SOURCES_FOLDER)/, $(OBJECTS)) $(SOURCES_DEPENDENCIES)
-
-$(NAME_OTOOL): $(MAIN_OBJECT_OTOOL) $(OBJECTS_COMMUN) $(OBJECTS_NM) $(OBJECTS_DESTINATION)
-	$(CC) $(CFLAGS) -o $@ $< $(addprefix $(OBJECTS_FOLDER)/$(SOURCES_FOLDER)/, $(OBJECTS)) $(SOURCES_DEPENDENCIES)
-rebuild: fclean init rebuildlib $(NAME)
-
-makelib:
-	$(MAKE_LIBRARIES)
-
-rebuildlib:
-	$(REBUILD_LIBRARIES)
-
-init:
-	mkdir -p $(OBJECTS_FOLDER)/$(SOURCES_FOLDER)
-
-$(MAIN_OBJECT_NM): $(MAIN_NM) $(INCLUDES_FOLDER)/$(INCLUDES)
-	$(CC) $(CFLAGS) -I $(INCLUDES_FOLDER) $(INCLUDES_LIBRARIES_FOLDER) -o $@ -c $<
-
-$(MAIN_OBJECT_OTOOL): $(MAIN_NM) $(INCLUDES_FOLDER)/$(INCLUDES)
-	$(CC) $(CFLAGS) -I $(INCLUDES_FOLDER) $(INCLUDES_LIBRARIES_FOLDER) -o $@ -c $<
-
-$(addprefix $(OBJECTS_FOLDER)/$(SOURCES_FOLDER)/, %.o): $(SOURCES_FOLDER)/%.c $(INCLUDES_FOLDER)/$(INCLUDES)
-	$(CC) $(CFLAGS) -I $(INCLUDES_FOLDER) $(INCLUDES_LIBRARIES_FOLDER) -o $@ -c $<
-
-clean:
-	rm -f $(addprefix $(OBJECTS_FOLDER)/$(SOURCES_FOLDER)/, $(OBJECTS_NM))
-	rm -f $(addprefix $(OBJECTS_FOLDER)/$(SOURCES_FOLDER)/, $(OBJECTS_OTOOL))
-	rm -f $(addprefix $(OBJECTS_FOLDER)/$(SOURCES_FOLDER)/, $(OBJECTS_COMMUN))
-	rm -f $(MAIN_OBJECT_NM)
-	rm -f $(MAIN_OBJECT_OTOOL)
-	rm -rf $(OBJECTS_FOLDER)
-
-fclean: clean
-	rm -f $(NAME_NM)
-	rm -f $(NAME_OTOOL)
-
-re: fclean all
+otool:
+	make -C otool/
+	cp otool/ft_otool .
