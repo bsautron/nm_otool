@@ -1,4 +1,5 @@
 *.swp
+libraries
 .objects
 ft_nm
 ft_otool

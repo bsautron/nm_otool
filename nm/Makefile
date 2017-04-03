@@ -28,6 +28,7 @@ CFLAGS = -Wextra -Wall -Werror
 MAIN = main.c
 MAIN_OBJECT = $(OBJECTS_FOLDER)/$(MAIN:.c=.o)
 
+REMOTES_DEPENDENCIES = $(foreach dep,$(DEPENDENCIES),$(dep).git)
 SOURCES_DEPENDENCIES = $(foreach dep,$(DEPENDENCIES),$(DEPENDENCIES_FOLDER)/$(dep)/$(dep).a)
 INCLUDES_LIBRARIES_FOLDER = $(foreach dep,$(DEPENDENCIES),-I $(DEPENDENCIES_FOLDER)/$(dep)/includes)
 MAKE_LIBRARIES = $(foreach dep,$(DEPENDENCIES),make -C $(DEPENDENCIES_FOLDER)/$(dep);)
@@ -49,6 +50,12 @@ rebuildlib:
 init:
 	mkdir -p $(OBJECTS_FOLDER)/$(SOURCES_FOLDER)
 	mkdir -p $(OTHER_FOLDERS)
+
+fetch_dependencies: $(REMOTES_DEPENDENCIES)
+
+%.git:
+	cd $(DEPENDENCIES_FOLDER) && git clone https://github.com/bsautron/$@
+
 
 $(NAME): $(MAIN_OBJECT) $(OBJECTS_DESTINATION)
 	$(CC) $(CFLAGS) -o $@ $< $(addprefix $(OBJECTS_FOLDER)/$(SOURCES_FOLDER)/, $(OBJECTS)) $(SOURCES_DEPENDENCIES)
